@@ -37,9 +37,8 @@ public class MainDB
 
             String createUsersTableQuery = "CREATE TABLE IF NOT EXISTS users (" +
                     " user_id INT AUTO_INCREMENT PRIMARY KEY," +
-                    " username VARCHAR(50) NOT NULL," +
                     " email VARCHAR(100) UNIQUE NOT NULL," +
-                    " password_hash VARCHAR(255) NOT NULL" +
+                    " password VARCHAR(255) NOT NULL" +
                     ");";
 
             stmt.executeUpdate(createUsersTableQuery);
@@ -52,6 +51,7 @@ public class MainDB
                     " location VARCHAR(100)," +
                     " event_date DATETIME NOT NULL," +
                     " price DECIMAL(10,2) NOT NULL" +
+                    " max_tickets INT NOT NULL, " +
                     ");";
 
             stmt.executeUpdate(createEventsTableQuery);
@@ -62,7 +62,6 @@ public class MainDB
                     " user_id INT NOT NULL," +
                     " event_id INT NOT NULL," +
                     " purchase_date DATETIME DEFAULT CURRENT_TIMESTAMP," +
-                    " seat_number VARCHAR(20)," +
                     " FOREIGN KEY (user_id) REFERENCES users(user_id)" +
                     " ON DELETE CASCADE" +
                     " ON UPDATE CASCADE," +
