@@ -11,7 +11,6 @@ import com.spire.barcode.QRCodeECL;
 
 import javax.imageio.ImageIO;
 
-
 public class TicketManager
 {
     //methods

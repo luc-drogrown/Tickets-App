@@ -7,7 +7,8 @@ import java.sql.Statement;
 
 //run this code only once to set the database
 
-public class MainDB {
+public class MainDB
+{
 
     public static void main(String[] args)
     {
@@ -17,20 +18,24 @@ public class MainDB {
 
         System.out.println("Loading driver ...");
 
-        try {
+        try
+        {
             Class.forName("com.mysql.cj.jdbc.Driver"); // Use com.mysql.jdbc.Driver if you're not on MySQL 8+ yet.
             System.out.println("Driver loaded!");
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e)
+        {
             throw new IllegalStateException("Cannot find the driver in the classpath!", e);
         }
 
-        try {
+        try
+        {
             Connection connection = DriverManager.getConnection(url, username, password);
             System.out.println("Database connected!");
 
             Statement stmt = connection.createStatement();
 
-            String createUsersTableQuery = "CREATE TABLE users (" +
+            String createUsersTableQuery = "CREATE TABLE IF NOT EXISTS users (" +
                     " user_id INT AUTO_INCREMENT PRIMARY KEY," +
                     " username VARCHAR(50) NOT NULL," +
                     " email VARCHAR(100) UNIQUE NOT NULL," +
@@ -38,9 +43,9 @@ public class MainDB {
                     ");";
 
             stmt.executeUpdate(createUsersTableQuery);
-            System.out.println("Table created or already exists.");
+            System.out.println("Users table created or already exists.");
 
-            String createEventsTableQuery = "CREATE TABLE events (" +
+            String createEventsTableQuery = "CREATE TABLE IF NOT EXISTS events (" +
                     " event_id INT AUTO_INCREMENT PRIMARY KEY," +
                     " title VARCHAR(100) NOT NULL," +
                     " description TEXT," +
@@ -50,9 +55,9 @@ public class MainDB {
                     ");";
 
             stmt.executeUpdate(createEventsTableQuery);
-            System.out.println("Table created or already exists.");
+            System.out.println("Events table created or already exists.");
 
-            String createTicketsTableUpdate = "CREATE TABLE tickets (" +
+            String createTicketsTableUpdate = "CREATE TABLE IF NOT EXISTS tickets (" +
                     " ticket_id INT AUTO_INCREMENT PRIMARY KEY," +
                     " user_id INT NOT NULL," +
                     " event_id INT NOT NULL," +
@@ -67,11 +72,13 @@ public class MainDB {
                     ");";
 
             stmt.executeUpdate(createTicketsTableUpdate);
-            System.out.println("Table created or already exists.");
+            System.out.println("Tickets table created or already exists.");
 
             stmt.close();
             connection.close();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
