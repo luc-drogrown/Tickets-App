@@ -87,5 +87,134 @@ public class DBManager
         System.out.println("Event added successfully!");
         return true;
     }
-}
 
+    public boolean buyTicket(String email, String eventTitle)
+    {
+        int eventID = getEventID(eventTitle); int userID = getUserID(email); int maxNoTickets = getMaxTickets(eventTitle);
+
+        String checkUserQuery = "SELECT COUNT(*) FROM tickets WHERE user_id=?";
+        String checkAvailability = "SELECT COUNT(*) FROM tickets where eventID=?";
+        String insertTicket = "INSERT INTO tickets (user_ID, event_ID) VALUES (?, ?)";
+
+        try (Connection connection = DriverManager.getConnection(DBurl, DBusername, DBpassword))
+        {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(checkUserQuery))
+            {
+                preparedStatement.setInt(1, userID);
+                ResultSet resultSet = preparedStatement.getResultSet();
+                resultSet.next();
+                if (resultSet.getInt(1) > 0)
+                {
+                    System.out.println("User already has a ticket for this event!");
+                    return false;
+                }
+            }
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(checkAvailability))
+            {
+                preparedStatement.setInt(1, eventID);
+                ResultSet resultSet = preparedStatement.getResultSet();
+                resultSet.next();
+
+                if (resultSet.getInt(1) <= maxNoTickets)
+                {
+                    try (PreparedStatement ps = connection.prepareStatement(insertTicket))
+                    {
+                        ps.setInt(1, userID);
+                        ps.setInt(2, eventID);
+                        ps.executeUpdate();
+                    }
+                    return true;
+                }
+                else
+                {
+                    System.out.println("No more tickets available!");
+                    return false;
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int getUserID(String email)
+    {
+        String query = "SELECT user_id FROM users WHERE email=?";
+
+        try
+        {
+            Connection connection = DriverManager.getConnection(DBurl, DBusername, DBpassword);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, email);
+            ResultSet resultSet = preparedStatement.getResultSet();
+            resultSet.next();
+            if (resultSet.getInt(1) > 0)
+            {
+                System.out.println("User found!");
+                return resultSet.getInt(1);
+            }
+            else
+            {
+                System.out.println("User not found!");
+                return -1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public int getEventID(String title)
+    {
+        String query = "SELECT event_id FROM users WHERE title=?";
+
+        try
+        {
+            Connection connection = DriverManager.getConnection(DBurl, DBusername, DBpassword);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, title);
+            ResultSet resultSet = preparedStatement.getResultSet();
+            resultSet.next();
+            if (resultSet.getInt(1) > 0)
+            {
+                System.out.println("Event found!");
+                return resultSet.getInt(1);
+            }
+            else
+            {
+                System.out.println("Event not found!");
+                return -1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    public int getMaxTickets(String title)
+    {
+        String query = "SELECT max_tickets FROM users WHERE title=?";
+
+        try
+        {
+            Connection connection = DriverManager.getConnection(DBurl, DBusername, DBpassword);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, title);
+            ResultSet resultSet = preparedStatement.getResultSet();
+            resultSet.next();
+            return resultSet.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+}
