@@ -4,6 +4,7 @@ public class Ticket {
     private int ticketID;
     private int userID;
     private int eventID;
+    private String qrPath;
 
     public int getTicketID() {
         return ticketID;
@@ -27,5 +28,13 @@ public class Ticket {
 
     public void setEventID(int eventID) {
         this.eventID = eventID;
+    }
+
+    public String getQrPath() {
+        return qrPath;
+    }
+
+    public void setQrPath(String qrPath) {
+        this.qrPath = qrPath;
     }
 }

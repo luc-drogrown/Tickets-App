@@ -6,6 +6,7 @@ public class Event {
     private int eventID;
     private String title;
     private String description;
+    private String location;
     private Date date = new Date();
     private float price;
     private int maxNoTickets;
@@ -56,5 +57,13 @@ public class Event {
 
     public void setMaxNoTickets(int maxNoTickets) {
         this.maxNoTickets = maxNoTickets;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

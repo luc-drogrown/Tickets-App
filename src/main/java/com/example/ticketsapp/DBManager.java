@@ -101,7 +101,7 @@ public class DBManager
             try (PreparedStatement preparedStatement = connection.prepareStatement(checkUserQuery))
             {
                 preparedStatement.setInt(1, userID);
-                ResultSet resultSet = preparedStatement.getResultSet();
+                ResultSet resultSet = preparedStatement.executeQuery();
                 resultSet.next();
                 if (resultSet.getInt(1) > 0)
                 {
@@ -113,7 +113,7 @@ public class DBManager
             try (PreparedStatement preparedStatement = connection.prepareStatement(checkAvailability))
             {
                 preparedStatement.setInt(1, eventID);
-                ResultSet resultSet = preparedStatement.getResultSet();
+                ResultSet resultSet = preparedStatement.executeQuery();
                 resultSet.next();
 
                 if (resultSet.getInt(1) <= maxNoTickets)
@@ -150,7 +150,7 @@ public class DBManager
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setString(1, email);
-            ResultSet resultSet = preparedStatement.getResultSet();
+            ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
             if (resultSet.getInt(1) > 0)
             {
@@ -179,7 +179,7 @@ public class DBManager
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setString(1, title);
-            ResultSet resultSet = preparedStatement.getResultSet();
+            ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
             if (resultSet.getInt(1) > 0)
             {
@@ -208,7 +208,7 @@ public class DBManager
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setString(1, title);
-            ResultSet resultSet = preparedStatement.getResultSet();
+            ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
             return resultSet.getInt(1);
         } catch (SQLException e) {
@@ -216,5 +216,91 @@ public class DBManager
         }
 
         return 0;
+    }
+
+    public User getUser(String email)
+    {
+        User user = new User();
+        String query = "SELECT * FROM users WHERE email=?";
+
+        try
+        {
+            Connection connection = DriverManager.getConnection(DBurl, DBusername, DBpassword);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, email);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            user.setUserID(resultSet.getInt(1));
+            user.setEmail(resultSet.getString(2));
+            user.setPassword(resultSet.getString(3));
+        }
+        catch  (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+
+    public Event getEvent(String title)
+    {
+        Event event = new Event();
+        String query = "SELECT * FROM events WHERE title=?";
+
+        try
+        {
+            Connection connection = DriverManager.getConnection(DBurl, DBusername, DBpassword);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setString(1, title);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            event.setEventID(resultSet.getInt(1));
+            event.setTitle(resultSet.getString(2));
+            event.setDescription(resultSet.getString(3));
+            event.setLocation(resultSet.getString(4));
+            event.setDate(resultSet.getDate(5));
+            event.setPrice(resultSet.getFloat(6));
+            event.setMaxNoTickets(resultSet.getInt(7));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return event;
+    }
+
+    public Ticket getTicket(String email, String title)
+    {
+        Ticket ticket = new Ticket();
+        String query = "SELECT * FROM tickets WHERE user_id=? AND event_id=?";
+
+        try
+        {
+            Connection connection = DriverManager.getConnection(DBurl, DBusername, DBpassword);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            int userID = getUserID(email);
+            int eventID = getEventID(title);
+            preparedStatement.setInt(1, userID);
+            preparedStatement.setInt(2, eventID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            ticket.setTicketID(resultSet.getInt(1));
+            ticket.setEventID(eventID);
+            ticket.setUserID(userID);
+            ticket.setQrPath(resultSet.getString(4));
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return ticket;
     }
 }

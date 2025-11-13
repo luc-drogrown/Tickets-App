@@ -61,6 +61,7 @@ public class MainDB
                     " ticket_id INT AUTO_INCREMENT PRIMARY KEY," +
                     " user_id INT NOT NULL," +
                     " event_id INT NOT NULL," +
+                    " qr_path STRING " +
                     " FOREIGN KEY (user_id) REFERENCES users(user_id)" +
                     " ON DELETE CASCADE" +
                     " ON UPDATE CASCADE," +
